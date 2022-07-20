@@ -6,11 +6,11 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:39:15 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/01 13:11:55 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/07/20 15:23:02 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incl/philosophers.h"
+#include "../incl/philo.h"
 
 int	isnumber(char *str)
 {
@@ -37,7 +37,7 @@ int	toosmbig(char *argv[])
 	{
 		if (ft_atoi(argv[i]) > 2147483647)
 			return (0);
-		if (ft_atoi(argv[i]) < -2147483648)
+		if (ft_atoi(argv[i]) <= 0)
 			return (0);
 		i++;
 	}

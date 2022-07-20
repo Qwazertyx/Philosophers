@@ -6,7 +6,7 @@
 #    By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/17 10:34:48 by vsedat            #+#    #+#              #
-#    Updated: 2022/07/01 12:57:32 by vsedat           ###   ########lyon.fr    #
+#    Updated: 2022/07/20 15:22:48 by vsedat           ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ REV			= \x1b[7m
 ##********##
 ### NAME ###
 ##********##
-NAME	= philosophers
+NAME	= philo
 
 ##***************##
 ### COMPILATION ###
@@ -68,7 +68,7 @@ OBJS = $(addprefix $(OBJ_PATH)/,$(SOURCES:.c=.o))
 SOURCES	=	main.c		\
 			parsing.c		\
 			utils.c		\
-			writing.c		\
+			utils2.c		\
 
 
 ##*********##
@@ -85,6 +85,10 @@ all:	${NAME}
 ${NAME}:	${OBJS}
 			@${CC} ${CFLAGS} ${OBJS} -o ${NAME}
 			@echo "$(GREEN)$(REV)Successful compilation"
+
+leaks:	all
+		@echo "$(VIOLET)you enter an area of testing, be carefull$(END)"
+		@leaks -atExit -- ./${NAME} 5 500 200 200 8
 	
 clean:
 		@rm -f ${OBJS}
@@ -115,5 +119,5 @@ sus:
 	@echo "$(IRED)       ⢿⣿⣦⣄⣀⣠⣴⣿⣿⠁ ⠈⠻⣿⣿⣿⣿⡿⠏    $(END)"
 	@echo "$(IRED)       ⠈⠛⠻⠿⠿⠿⠿⠋⠁              $(END)"
 
-.PHONY:	all clean fclean re sus
+.PHONY:	all clean fclean re sus leaks
 

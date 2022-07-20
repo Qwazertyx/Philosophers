@@ -6,11 +6,11 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:52:21 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/01 13:12:54 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/07/20 16:15:48 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incl/philosophers.h"
+#include "../incl/philo.h"
 
 int	atoiparsing(char *str)
 {
@@ -65,16 +65,3 @@ int	ft_atoi(char *str)
 	return (result);
 }
 
-void	fillstruct(char *argv[], t_data *data)
-{
-	int	i;
-
-	i = 1;
-	data->nbphilo = ft_atoi(argv[i]);
-	data->timetodie = ft_atoi(argv[i + 1]);
-	data->timetoeat = ft_atoi(argv[i + 2]);
-	data->timetosleep = ft_atoi(argv[i + 3]);
-	data->maxeat = -1;
-	if (argv[i + 4])
-		data->maxeat = ft_atoi(argv[i + 4]);
-}
