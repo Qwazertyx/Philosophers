@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:54 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/21 16:48:12 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/07/23 13:12:33 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 		pthread_mutex_init(&philos[i].rfork, NULL);
 		philos[i].lasteat = 0;
 		philos[i].nbeaten = 0;
+		philos[i].data.basetime = get_time();
 		philos[i].data.nbphilo = ft_atoi(argv[1]);
 		philos[i].data.timetodie = ft_atoi(argv[2]);
 		philos[i].data.timetoeat = ft_atoi(argv[3]);
@@ -62,10 +63,11 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 	philos[0].lfork = &philos[i - 1].rfork;
 }
 
-void	freephils(pthread_t *thread_id, t_philo *philos)
+int	freephils(pthread_t *thread_id, t_philo *philos)
 {
 	free(thread_id);
 	free(philos);
+	return (0);
 }
 
 void	writeaction(int timestamp, int nbphilo, char *action)

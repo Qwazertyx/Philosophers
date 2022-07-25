@@ -6,7 +6,7 @@
 #    By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/17 10:34:48 by vsedat            #+#    #+#              #
-#    Updated: 2022/07/21 14:02:14 by vsedat           ###   ########lyon.fr    #
+#    Updated: 2022/07/23 15:08:55 by vsedat           ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ NAME	= philo
 ### COMPILATION ###
 ##**************###
 CC		= gcc #-Ofast
-CFLAGS	= #-Wall -Wextra -Werror -g3 #-fsanitize=address leaks -atExit -- ./pipex
+CFLAGS	= -Wall -Wextra -Werror -g3 -fsanitize=thread #-fsanitize=address leaks -atExit -- ./pipex
 CMLX	= -framework OpenGL -framework AppKit -g -lmlx -Lmlx
 
 ##*******************##

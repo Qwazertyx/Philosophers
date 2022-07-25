@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:57 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/21 18:22:34 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/07/23 15:08:46 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,58 @@ int	checkphilos(t_philo **philos)
 	return (0);
 }
 
-int	checklife(t_philo	*philo, int basetime)
+int	checklife(t_philo	*philo)
 {
-	printf("a||\n");
-	if (philo->lasteat - basetime > philo->data.timetodie)
+	int	i;
+
+	i = 0;
+	while (i < philo[i].data.nbphilo)
 	{
-		writeaction(get_time() - philo->basetime, philo->philoid, "died");
-		philo->data.everyonealive = 0;
-		printf("dd\n");
-		return (0);
+		pthread_mutex_lock(&philo->mlasteat);
+		if (philo[i].lasteat + philo[i].data.timetodie < get_time() - philo[i].data.basetime)
+		{
+			writeaction(get_time() - philo[i].data.basetime,
+				philo[i].philoid, "died");
+			pthread_mutex_lock(&philo->meveryonealive);
+			philo[i].data.everyonealive = 0;
+			pthread_mutex_unlock(&philo->meveryonealive);
+			return (0);
+		}
+		pthread_mutex_unlock(&philo->mlasteat);
+	i++;
 	}
-	printf("sdd\n");
 	return (1);
+}
+
+void	willforkr(t_philo *philo, int basetime)
+{
+	pthread_mutex_lock(&philo->rfork);
+	writeaction(get_time() - basetime, philo->philoid, "fork");
+}
+
+void	willforkl(t_philo *philo, int basetime)
+{
+	pthread_mutex_lock(philo->lfork);
+	writeaction(get_time() - basetime, philo->philoid, "fork");
+}
+
+void	willeat(t_philo *philo, int basetime)
+{
+	writeaction(get_time() - basetime, philo->philoid, "eating");
+	pthread_mutex_lock(&philo->mlasteat);
+	philo->lasteat = get_time();
+	pthread_mutex_unlock(&philo->mlasteat);
+	pthread_mutex_lock(&philo->mnbeaten);
+	philo->nbeaten++;
+	pthread_mutex_unlock(&philo->mnbeaten);
+	ft_msleep(philo->data.timetoeat);
+	unlockfork(philo);
+}
+
+void	willsleep(t_philo *philo, int basetime)
+{
+	writeaction(get_time() - basetime, philo->philoid, "sleeping");
+	ft_msleep(philo->data.timetosleep);
 }
 
 void	forkeatsleep(t_philo *philo, int basetime)
@@ -73,23 +113,31 @@ void	forkeatsleep(t_philo *philo, int basetime)
 	writeaction(get_time() - basetime, philo->philoid, "fork");
 	pthread_mutex_lock(philo->lfork);
 	writeaction(get_time() - basetime, philo->philoid, "fork");
+	writeaction(get_time() - basetime, philo->philoid, "eating");
 	philo->lasteat = get_time();
 	philo->nbeaten++;
-	writeaction(get_time() - basetime, philo->philoid, "eating");
 	ft_msleep(philo->data.timetoeat);
 	unlockfork(philo);
 	writeaction(get_time() - basetime, philo->philoid, "sleeping");
 	ft_msleep(philo->data.timetosleep);
 }
 
-void	myphilonext(t_philo *philo, int basetime)
+int	myphilonext(t_philo *philo, int basetime)
 {
-	while (philo->data.everyonealive == 1)
+	while (1)
 	{
-		printf("s||\n");
+		pthread_mutex_lock(&philo->meveryonealive);
+		if (!philo->data.everyonealive)
+			return (0);
+		pthread_mutex_unlock(&philo->meveryonealive);
 		writeaction(get_time() - basetime, philo->philoid, "thinking");
-		forkeatsleep(philo, basetime);
+		willforkl(philo, basetime);
+		willforkr(philo, basetime);
+		willeat(philo, basetime);
+		willsleep(philo, basetime);
+	//	forkeatsleep(philo, basetime);
 	}
+	return (0);
 }
 
 void	*myphilofun(void *philos)
@@ -98,54 +146,54 @@ void	*myphilofun(void *philos)
 	int		basetime;
 
 	basetime = get_time();
-	philo->basetime = get_time();
 	philo = (t_philo *)philos;
 	if (philo->data.nbphilo % 2 == 0)
 	{
 		if (philo->philoid % 2 != 0)
-			forkeatsleep(philo, basetime);
+			myphilonext(philo, philo->data.basetime);
 		else
 			usleep(100);
-		myphilonext(philo, basetime);
+		myphilonext(philo, philo->data.basetime);
 	}
 	else
 	{
 		if (philo->philoid % 2 == 0)
-			forkeatsleep(philo, basetime);
+			myphilonext(philo, philo->data.basetime);
 		else
 			usleep(100);
-		myphilonext(philo, basetime);
+		myphilonext(philo, philo->data.basetime);
 	}
 	return (0);
 }
 
-
-int	main(int argc, char *argv[])
+int	philo(char *argv[])
 {
 	pthread_t		*thread_id;
 	t_philo			*philos;
 	int				i;
 
-	if (!parsing(argc, argv))
-		return (0 * printf("Error\n"));
 	philos = malloc(ft_atoi(argv[1]) * sizeof(t_philo));
 	thread_id = malloc(ft_atoi(argv[1]) * sizeof(pthread_t));
 	fillmyphilos(argv, philos);
 	i = -1;
-	printf("||d\n");
 	while (++i < ft_atoi(argv[1]))
 	{
 		philos[i].philoid = i + 1;
 		pthread_create(&thread_id[i], NULL, myphilofun, &philos[i]);
 	}
-	printf("dd||\n");
 	while (1)
-		if (!checkphilos(&philos))
-			return (0);
+		if (!checklife(philos))
+			return (freephils(thread_id, philos));
 	i = -1;
 	while (++i < ft_atoi(argv[1]))
 		pthread_join(thread_id[i], NULL);
-	i = 0;
 	freephils(thread_id, philos);
+}
+
+int	main(int argc, char *argv[])
+{
+	if (!parsing(argc, argv))
+		return (0);
+	philo(argv);
 	return (0);
 }
