@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 11:37:46 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/23 14:51:34 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/05 11:44:54 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,27 @@
 
 typedef struct s_data
 {
-	int		nbphilo;
-	int64_t		basetime;
-	int		timetodie;
-	int		timetoeat;
-	int		timetosleep;
-	int		maxeat;
-	int		everyonealive;
+	int				nbphilo;
+	int64_t			basetime;
+	int				timetodie;
+	int				timetoeat;
+	int				timetosleep;
+	int				maxeat;
+	int				everyonealive;
+	pthread_mutex_t	meveryonealive;
+	pthread_mutex_t	start;
 }					t_data;
 
 typedef struct s_philo
 {
 	int				philoid;
-	int				lasteat;
+	int64_t			lasteat;
 	int				nbeaten;
 	pthread_mutex_t	rfork;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	mnbeaten;
 	pthread_mutex_t	mlasteat;
-	pthread_mutex_t	meveryonealive;
-	t_data			data;
+	t_data			*data;
 }					t_philo;
 
 int64_t	get_time(void);

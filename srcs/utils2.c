@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:54 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/23 13:12:33 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/05 13:51:32 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,30 @@ int	ft_strcmp(char *s1, char *s2)
 
 void	fillmyphilos(char *argv[], t_philo *philos)
 {
-	int	i;
+	t_data	*data;
+	int		i;
 
 	i = 0;
+	data = malloc(sizeof(t_data));
+	pthread_mutex_init(&data->start, NULL);
 	while (i < ft_atoi(argv[1]))
 	{
 		pthread_mutex_init(&philos[i].rfork, NULL);
-		philos[i].lasteat = 0;
+		pthread_mutex_init(&philos[i].mlasteat, NULL);
+		pthread_mutex_init(&philos[i].mnbeaten, NULL);
 		philos[i].nbeaten = 0;
-		philos[i].data.basetime = get_time();
-		philos[i].data.nbphilo = ft_atoi(argv[1]);
-		philos[i].data.timetodie = ft_atoi(argv[2]);
-		philos[i].data.timetoeat = ft_atoi(argv[3]);
-		philos[i].data.timetosleep = ft_atoi(argv[4]);
-		philos[i].data.maxeat = -1;
-		if (argv[5])
-			philos[i].data.maxeat = ft_atoi(argv[5]);
-		philos[i].data.everyonealive = 1;
+		philos[i].data = data;
 		i++;
 	}
+	data->nbphilo = ft_atoi(argv[1]);
+	data->timetodie = ft_atoi(argv[2]);
+	data->timetoeat = ft_atoi(argv[3]);
+	data->timetosleep = ft_atoi(argv[4]);
+	data->maxeat = -1;
+	if (argv[5])
+		data->maxeat = ft_atoi(argv[5]);
+	pthread_mutex_init(&data->meveryonealive, NULL);
+	data->everyonealive = 1;
 	i = 1;
 	while (i < ft_atoi(argv[1]))
 	{
@@ -65,6 +70,19 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 
 int	freephils(pthread_t *thread_id, t_philo *philos)
 {
+	int	i;
+
+	i = 0;
+	while (i < philos[0].data->nbphilo)
+	{
+		pthread_mutex_destroy(&philos[i].rfork);
+		pthread_mutex_destroy(&philos[i].mnbeaten);
+		pthread_mutex_destroy(&philos[i].mlasteat);
+		i++;
+	}
+	pthread_mutex_destroy(&philos[0].data->meveryonealive);
+	pthread_mutex_destroy(&philos[0].data->start);
+	free(philos[0].data);
 	free(thread_id);
 	free(philos);
 	return (0);
@@ -74,19 +92,19 @@ void	writeaction(int timestamp, int nbphilo, char *action)
 {
 	if (!ft_strcmp(action, "eating"))
 		printf("%d %d is eating\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "sleeping"))
+	else if (!ft_strcmp(action, "sleeping"))
 		printf("%d %d is sleeping\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "thinking"))
+	else if (!ft_strcmp(action, "thinking"))
 		printf("%d %d is thinking\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "died"))
+	else if (!ft_strcmp(action, "died"))
 		printf("%d %d died\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "fork"))
+	else if (!ft_strcmp(action, "fork"))
 		printf("%d %d has taken a fork\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "rfork"))
+	else if (!ft_strcmp(action, "rfork"))
 		printf("%d %d has taken a rfork\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "lfork"))
+	else if (!ft_strcmp(action, "lfork"))
 		printf("%d %d has taken a lfork\n", timestamp, nbphilo);
-	if (!ft_strcmp(action, "forks"))
+	else if (!ft_strcmp(action, "forks"))
 	{
 		printf("%d %d has taken a fork\n", timestamp, nbphilo);
 		printf("%d %d has taken a fork\n", timestamp, nbphilo);
