@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:54 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/05 13:51:32 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/12 14:01:48 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,14 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 	if (argv[5])
 		data->maxeat = ft_atoi(argv[5]);
 	pthread_mutex_init(&data->meveryonealive, NULL);
+	pthread_mutex_init(&data->mtimetodie, NULL);
+	pthread_mutex_init(&data->mbasetime, NULL);
+	pthread_mutex_init(&data->mnbphilo, NULL);
+	pthread_mutex_init(&data->mmaxeat, NULL);
 	data->everyonealive = 1;
-	i = 1;
-	while (i < ft_atoi(argv[1]))
-	{
+	i = 0;
+	while (++i < ft_atoi(argv[1]))
 		philos[i].lfork = &philos[i - 1].rfork;
-		i++;
-	}
 	philos[0].lfork = &philos[i - 1].rfork;
 }
 
@@ -80,6 +81,9 @@ int	freephils(pthread_t *thread_id, t_philo *philos)
 		pthread_mutex_destroy(&philos[i].mlasteat);
 		i++;
 	}
+	pthread_mutex_destroy(&philos[0].data->mnbphilo);
+	pthread_mutex_destroy(&philos[0].data->mbasetime);
+	pthread_mutex_destroy(&philos[0].data->mtimetodie);
 	pthread_mutex_destroy(&philos[0].data->meveryonealive);
 	pthread_mutex_destroy(&philos[0].data->start);
 	free(philos[0].data);
@@ -88,9 +92,12 @@ int	freephils(pthread_t *thread_id, t_philo *philos)
 	return (0);
 }
 
-void	writeaction(int timestamp, int nbphilo, char *action)
+void	writeaction(int timestamp, int nbphilo, char *action, t_philo *philo)
 {
-	if (!ft_strcmp(action, "eating"))
+	pthread_mutex_lock(&philo->data->meveryonealive);
+	if (!philo->data->everyonealive)
+		;
+	else if (!ft_strcmp(action, "eating"))
 		printf("%d %d is eating\n", timestamp, nbphilo);
 	else if (!ft_strcmp(action, "sleeping"))
 		printf("%d %d is sleeping\n", timestamp, nbphilo);
@@ -109,4 +116,5 @@ void	writeaction(int timestamp, int nbphilo, char *action)
 		printf("%d %d has taken a fork\n", timestamp, nbphilo);
 		printf("%d %d has taken a fork\n", timestamp, nbphilo);
 	}
+	pthread_mutex_unlock(&philo->data->meveryonealive);
 }
