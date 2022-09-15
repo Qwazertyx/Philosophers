@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:57 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/15 15:00:29 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/15 17:03:05 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ int	checkmaxeat(t_philo *philos)
 	pthread_mutex_lock(&philos[i].data->mnbphilo);
 	while (i < philos[0].data->nbphilo - 1)
 	{
+		pthread_mutex_unlock(&philos[0].data->mnbphilo);
 		pthread_mutex_lock(&philos[i].data->mmaxeat);
 		pthread_mutex_lock(&philos[i].mnbeaten);
 		if (philos[i].nbeaten <= philos[i].data->maxeat
@@ -64,7 +65,6 @@ int	checkmaxeat(t_philo *philos)
 		{
 			pthread_mutex_unlock(&philos[i].data->mmaxeat);
 			pthread_mutex_unlock(&philos[i].mnbeaten);
-			pthread_mutex_unlock(&philos[i].data->mnbphilo);
 			return (1);
 		}
 		pthread_mutex_unlock(&philos[i].data->mmaxeat);
@@ -86,6 +86,7 @@ int	checklife(t_philo *philos)
 	pthread_mutex_lock(&philos[i].data->mnbphilo);
 	while (i < philos[0].data->nbphilo)
 	{
+		pthread_mutex_unlock(&philos[0].data->mnbphilo);
 		pthread_mutex_lock(&philos[i].data->mtimetodie);
 		pthread_mutex_lock(&philos[i].mlasteat);
 		if (philos[i].lasteat + philos[i].data->timetodie < get_time())
@@ -197,7 +198,7 @@ void	*myphilofun(void *philos)
 	philo->lasteat = get_time();
 	pthread_mutex_unlock(&philo->mlasteat);
 	if (philo->philoid % 2)
-		usleep(philo->data->timetoeat - 1);
+		usleep(2000);
 	myphilonext(philo, philo->data->basetime);
 	return (0);
 }
@@ -220,7 +221,7 @@ int	philo(char *argv[])
 	}
 	philos[0].data->basetime = get_time();
 	pthread_mutex_unlock(&philos[0].data->start);
-	usleep(1000);
+	usleep(5000);
 	while (1)
 		if (!checklife(philos))
 			break ;
