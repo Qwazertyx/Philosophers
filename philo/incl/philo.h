@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 11:37:46 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/12 14:01:58 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/19 13:18:59 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,17 @@ typedef struct s_philo
 }					t_philo;
 
 int64_t	get_time(void);
+void	ft_msleep(int ms);
 int		parsing(int argc, char *argv[]);
+int		checklife(t_philo *philos);
 int		ft_atoi(char *str);
 void	fillmyphilos(char *argv[], t_philo *philos);
 void	writeaction(int timestamp, int nbphilo, char *action, t_philo *philo);
 int		ft_strcmp(char *s1, char *s2);
 int		freephils(pthread_t *t, t_philo *p);
+void	willsleep(t_philo *philo, int basetime);
+void	willeat(t_philo *philo, int basetime);
+void	willforkl(t_philo *philo, int basetime);
+void	willforkr(t_philo *philo, int basetime);
+
 #endif

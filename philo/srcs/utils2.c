@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:54 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/15 13:51:17 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/19 12:49:32 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,23 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-//philo 0 rfork: 0
-//philo 1 rfork: 1
-//philo 1 lfork: 0
-//philo 2 rfork: 2
-//philo 2 lfork: 1
-//philo 3 rfork: 3
-//philo 3 lfork: 2
-//philo 4 rfork: 4
-//philo 4 lfork: 3
-//philo 0 lfork: 4
+void	initmutex(char *argv[], t_data *data)
+{
+	data->nbphilo = ft_atoi(argv[1]);
+	data->timetodie = ft_atoi(argv[2]);
+	data->timetoeat = ft_atoi(argv[3]);
+	data->timetosleep = ft_atoi(argv[4]);
+	data->maxeat = -1;
+	if (argv[5])
+		data->maxeat = ft_atoi(argv[5]);
+	data->everyonealive = 1;
+	pthread_mutex_init(&data->meveryonealive, NULL);
+	pthread_mutex_init(&data->mtimetodie, NULL);
+	pthread_mutex_init(&data->mbasetime, NULL);
+	pthread_mutex_init(&data->mnbphilo, NULL);
+	pthread_mutex_init(&data->mmaxeat, NULL);
+	pthread_mutex_init(&data->start, NULL);
+}
 
 void	fillmyphilos(char *argv[], t_philo *philos)
 {
@@ -50,20 +57,7 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 		philos[i].data = data;
 		i++;
 	}
-	data->nbphilo = ft_atoi(argv[1]);
-	data->timetodie = ft_atoi(argv[2]);
-	data->timetoeat = ft_atoi(argv[3]);
-	data->timetosleep = ft_atoi(argv[4]);
-	data->maxeat = -1;
-	if (argv[5])
-		data->maxeat = ft_atoi(argv[5]);
-	pthread_mutex_init(&data->meveryonealive, NULL);
-	pthread_mutex_init(&data->mtimetodie, NULL);
-	pthread_mutex_init(&data->mbasetime, NULL);
-	pthread_mutex_init(&data->mnbphilo, NULL);
-	pthread_mutex_init(&data->mmaxeat, NULL);
-	pthread_mutex_init(&data->start, NULL);
-	data->everyonealive = 1;
+	initmutex(argv, data);
 	i = 0;
 	while (++i < ft_atoi(argv[1]))
 		philos[i].lfork = &philos[i - 1].rfork;

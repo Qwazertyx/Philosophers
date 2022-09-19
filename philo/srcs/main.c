@@ -6,145 +6,11 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:57 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/15 17:03:05 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/19 13:18:21 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incl/philo.h"
-
-int64_t	get_time(void)
-{
-	static struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * (int)1000) + (tv.tv_usec / 1000));
-}
-
-void	ft_msleep(int ms)
-{
-	int	time;
-	int	i;
-
-	time = get_time();
-	i = time;
-	while (i < time + ms)
-	{
-		i = get_time();
-		usleep(100);
-	}
-}
-
-int	checkinterlife(t_philo *philo, int i)
-{
-	pthread_mutex_lock(&philo->data->mbasetime);
-	writeaction(get_time() - philo[i].data->basetime,
-		philo[i].philoid, "died", philo);
-	pthread_mutex_unlock(&philo[i].data->mbasetime);
-	pthread_mutex_lock(&philo[i].data->meveryonealive);
-	philo[i].data->everyonealive = 0;
-	pthread_mutex_unlock(&philo[i].data->meveryonealive);
-	pthread_mutex_unlock(&philo[i].data->mtimetodie);
-	pthread_mutex_unlock(&philo[i].mlasteat);
-	pthread_mutex_unlock(&philo[i].data->mnbphilo);
-	return (0);
-}
-
-int	checkmaxeat(t_philo *philos)
-{
-	int	i;
-
-	i = 0;
-	pthread_mutex_lock(&philos[i].data->mnbphilo);
-	while (i < philos[0].data->nbphilo - 1)
-	{
-		pthread_mutex_unlock(&philos[0].data->mnbphilo);
-		pthread_mutex_lock(&philos[i].data->mmaxeat);
-		pthread_mutex_lock(&philos[i].mnbeaten);
-		if (philos[i].nbeaten <= philos[i].data->maxeat
-			|| philos->data->maxeat == -1)
-		{
-			pthread_mutex_unlock(&philos[i].data->mmaxeat);
-			pthread_mutex_unlock(&philos[i].mnbeaten);
-			return (1);
-		}
-		pthread_mutex_unlock(&philos[i].data->mmaxeat);
-		pthread_mutex_unlock(&philos[i].mnbeaten);
-		i++;
-	}
-	pthread_mutex_lock(&philos[i].data->meveryonealive);
-	philos[i].data->everyonealive = 0;
-	pthread_mutex_unlock(&philos[i].data->meveryonealive);
-	pthread_mutex_unlock(&philos[i].data->mnbphilo);
-	return (0);
-}
-
-int	checklife(t_philo *philos)
-{
-	int	i;
-
-	i = 0;
-	pthread_mutex_lock(&philos[i].data->mnbphilo);
-	while (i < philos[0].data->nbphilo)
-	{
-		pthread_mutex_unlock(&philos[0].data->mnbphilo);
-		pthread_mutex_lock(&philos[i].data->mtimetodie);
-		pthread_mutex_lock(&philos[i].mlasteat);
-		if (philos[i].lasteat + philos[i].data->timetodie < get_time())
-		{
-			checkinterlife(philos, i);
-			return (0);
-		}
-		pthread_mutex_unlock(&philos[i].data->mtimetodie);
-		pthread_mutex_unlock(&philos[i].mlasteat);
-		i++;
-	}
-	pthread_mutex_unlock(&philos[0].data->mnbphilo);
-	return (checkmaxeat(philos));
-}
-
-void	willforkr(t_philo *philo, int basetime)
-{
-	pthread_mutex_lock(&philo->rfork);
-	pthread_mutex_lock(&philo->data->mbasetime);
-	writeaction(get_time() - basetime, philo->philoid,
-		"fork", philo);
-	pthread_mutex_unlock(&philo->data->mbasetime);
-}
-
-void	willforkl(t_philo *philo, int basetime)
-{
-	pthread_mutex_lock(philo->lfork);
-	pthread_mutex_lock(&philo->data->mbasetime);
-	writeaction(get_time() - basetime, philo->philoid,
-		"fork", philo);
-	pthread_mutex_unlock(&philo->data->mbasetime);
-}
-
-void	willeat(t_philo *philo, int basetime)
-{
-	pthread_mutex_lock(&philo->data->mbasetime);
-	writeaction(get_time() - basetime, philo->philoid,
-		"eating", philo);
-	pthread_mutex_unlock(&philo->data->mbasetime);
-	pthread_mutex_lock(&philo->mlasteat);
-	philo->lasteat = get_time();
-	pthread_mutex_unlock(&philo->mlasteat);
-	pthread_mutex_lock(&philo->mnbeaten);
-	philo->nbeaten++;
-	pthread_mutex_unlock(&philo->mnbeaten);
-	ft_msleep(philo->data->timetoeat);
-	pthread_mutex_unlock(&philo->rfork);
-	pthread_mutex_unlock(philo->lfork);
-}
-
-void	willsleep(t_philo *philo, int basetime)
-{
-	pthread_mutex_lock(&philo->data->mbasetime);
-	writeaction(get_time() - basetime, philo->philoid,
-		"sleeping", philo);
-	pthread_mutex_unlock(&philo->data->mbasetime);
-	ft_msleep(philo->data->timetosleep);
-}
 
 void	myonlyphilo(t_philo *philo, int basetime)
 {
@@ -221,7 +87,7 @@ int	philo(char *argv[])
 	}
 	philos[0].data->basetime = get_time();
 	pthread_mutex_unlock(&philos[0].data->start);
-	usleep(5000);
+	usleep(3000);
 	while (1)
 		if (!checklife(philos))
 			break ;

@@ -6,7 +6,7 @@
 #    By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/17 10:34:48 by vsedat            #+#    #+#              #
-#    Updated: 2022/09/15 15:07:53 by vsedat           ###   ########lyon.fr    #
+#    Updated: 2022/09/19 13:21:48 by vsedat           ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ NAME	= philo
 ### COMPILATION ###
 ##**************###
 CC		= gcc #-Ofast
-CFLAGS	= -Wall -Wextra -Werror -g3 #-fsanitize=thread
+CFLAGS	= -Wall -Wextra -Werror
 #https://nafuka11.github.io/philosophers-visualizer/  #-fsanitize=address #leaks -atExit -- ./pipex #-fsanitize=thread 
 CMLX	= -framework OpenGL -framework AppKit -g -lmlx -Lmlx
 
@@ -70,12 +70,14 @@ SOURCES	=	main.c		\
 			parsing.c		\
 			utils.c		\
 			utils2.c		\
+			utils3.c		\
+			actions.c		\
+			checker.c		\
 
 
 ##*********##
 ### RULES ###
 ##*********##
-
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(HEADER) Makefile
 			@mkdir -p objs
 			@echo "$(BLUE)Compiling:$(END)$(CYAN) $<"
