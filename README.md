@@ -1,5 +1,5 @@
 <h1 align="center">Philosophers
-  <a href="https://github.com/JaeSeoKim/badge42"><img src="https://badge42.vercel.app/api/v2/cl1kzq6n0001609iagycostl5/project/2501070" alt="vsedat's 42 philosophers Score" /></a>
+<a href="https://github.com/JaeSeoKim/badge42"><img src="https://badge42.vercel.app/api/v2/cl1kzq6n0001609iagycostl5/project/2542499" alt="vsedat's 42 Philosophers Score" /></a>
 
 </h1>
 <h3 align="center">Here are my philos:</h3>
