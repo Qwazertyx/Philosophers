@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/19 13:16:57 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/19 13:17:11 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/21 14:00:59 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ int	checklife(t_philo *philos)
 		pthread_mutex_unlock(&philos[0].data->mnbphilo);
 		pthread_mutex_lock(&philos[i].data->mtimetodie);
 		pthread_mutex_lock(&philos[i].mlasteat);
-		if (philos[i].lasteat + philos[i].data->timetodie < get_time())
+		if (philos[i].lasteat && philos[i].lasteat
+			+ philos[i].data->timetodie < get_time())
 		{
 			pthread_mutex_unlock(&philos[i].data->mtimetodie);
 			pthread_mutex_unlock(&philos[i].mlasteat);

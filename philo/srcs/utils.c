@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:52:21 by vsedat            #+#    #+#             */
-/*   Updated: 2022/07/20 16:15:48 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/19 13:29:25 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,4 +64,3 @@ int	ft_atoi(char *str)
 		result *= -1;
 	return (result);
 }
-

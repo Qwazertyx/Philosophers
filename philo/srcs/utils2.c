@@ -6,7 +6,7 @@
 /*   By: vsedat <vsedat@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 12:01:54 by vsedat            #+#    #+#             */
-/*   Updated: 2022/09/19 12:49:32 by vsedat           ###   ########lyon.fr   */
+/*   Updated: 2022/09/21 13:56:23 by vsedat           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,15 @@ void	initmutex(char *argv[], t_data *data)
 	pthread_mutex_init(&data->start, NULL);
 }
 
-void	fillmyphilos(char *argv[], t_philo *philos)
+int	fillmyphilos(char *argv[], t_philo *philos)
 {
 	t_data	*data;
 	int		i;
 
 	i = 0;
 	data = malloc(sizeof(t_data));
+	if (!data)
+		return (0);
 	pthread_mutex_init(&data->start, NULL);
 	while (i < ft_atoi(argv[1]))
 	{
@@ -54,6 +56,7 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 		pthread_mutex_init(&philos[i].mlasteat, NULL);
 		pthread_mutex_init(&philos[i].mnbeaten, NULL);
 		philos[i].nbeaten = 0;
+		philos[i].lasteat = 0;
 		philos[i].data = data;
 		i++;
 	}
@@ -62,6 +65,8 @@ void	fillmyphilos(char *argv[], t_philo *philos)
 	while (++i < ft_atoi(argv[1]))
 		philos[i].lfork = &philos[i - 1].rfork;
 	philos[0].lfork = &philos[i - 1].rfork;
+	pthread_mutex_lock(&philos[0].data->start);
+	return (1);
 }
 
 int	freephils(pthread_t *thread_id, t_philo *philos)
